@@ -2,9 +2,9 @@ const image_path = `https://image.tmdb.org/t/p/w1280`;
 
 const API_KEY = import.meta.env.VITE_APP_MOVIE_API_KEY;
 
-const input = document.querySelector(".search input");
+const input = document.querySelector(".search-bar input");
 
-const btn = document.querySelector(".search button");
+const btn = document.querySelector(".search-bar button");
 
 const main_grid_title = document.querySelector(".favorites h1");
 
@@ -25,6 +25,7 @@ async function getMovieBySearch(searchTerm) {
     `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${searchTerm}`
   );
   const respData = await resp.json();
+  console.log(respData);
   console.log(respData.results);
   return respData.results;
 }
@@ -38,7 +39,7 @@ async function addSearchedMoviesToDom() {
   main_grid.innerHTML = data
     .map((e) => {
       return `
-       <div class="card" data-id="${e.id}">
+       <div class="movie-card" data-id="${e.id}">
             <div class="img">
               <img src="${image_path + e.poster_path}">
             </div>
@@ -57,7 +58,7 @@ async function addSearchedMoviesToDom() {
           `;
     })
     .join("");
-  const cards = document.querySelectorAll(".card");
+  const cards = document.querySelectorAll(".movie-card");
   addClickEffectToCard(cards);
 }
 
@@ -85,17 +86,17 @@ async function showPopup(card) {
 
   const movieId = card.getAttribute("data-id");
   const movie = await getMovieById(movieId);
-  console.log(movie);
+  // console.log(movie);
   const movieTrailer = await getMovieTrailer(movieId);
   // console.log(image_path + movie.poster_path);
 
-  console.log(movieTrailer);
-  popup_container.style.background = `linear-gradient(rgba(0,.0,.0,.8), rgba(0,.0,.0,.1)), url(${
+  // console.log(movieTrailer);
+  popup_container.style.background = `linear-gradient(rgba(0, .0, .0, .8), rgba(0, .0, .0, .5)), url(${
     image_path + movie.poster_path
   })`;
 
   popup_container.innerHTML = ` 
-  <span class="x-icon">&#10006;</span>
+  <span class="x-button">&#10006;</span>
     <div class="content">
         <div class="left">
             <div class="poster-img">
@@ -149,7 +150,7 @@ async function showPopup(card) {
     </div>
   `;
 
-  const xIcon = document.querySelector(".x-icon");
+  const xIcon = document.querySelector(".x-button");
   xIcon.addEventListener("click", () =>
     popup_container.classList.remove("show-popup")
   );
@@ -211,7 +212,7 @@ async function fetchFavoriteMovies() {
 
 function addFavoritesToDomFromLocalStorage(movieData) {
   main_grid.innerHTML += `
-  <div class="card" data-id="${movieData.id}">
+  <div class="movie-card" data-id="${movieData.id}">
   <div class="img">
     <img src="${image_path + movieData.poster_path}">
   </div>
@@ -229,7 +230,7 @@ function addFavoritesToDomFromLocalStorage(movieData) {
 </div>
   `;
 
-  const cards = document.querySelectorAll(".card");
+  const cards = document.querySelectorAll(".movie-card");
   addClickEffectToCard(cards);
 }
 
@@ -253,7 +254,7 @@ async function addToDomTrending() {
     .slice(0, 10)
     .map((e) => {
       return `
-      <div class="card" data-id="${e.id}">
+      <div class="movie-card" data-id="${e.id}">
         <div class="img">
           <img src="${image_path + e.poster_path}">
         </div>
